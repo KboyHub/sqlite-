@@ -10,7 +10,7 @@
 
 @interface YDContact : NSObject
 
-@property (nonatomic,copy)NSString *roleID;
+@property (nonatomic,copy)NSString *RoleID;
 @property (nonatomic,copy)NSString *name;
 @property (nonatomic,copy)NSString *iconUrl;
 

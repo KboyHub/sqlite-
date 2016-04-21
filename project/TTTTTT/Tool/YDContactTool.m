@@ -16,7 +16,7 @@ static FMDatabase *_db;
 +(void)initialize
 {
     //打开数据库
-    NSString *path=[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"ydcontact.sqlite"];
+    NSString *path=[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"shianydcontact.sqlite"];
     _db=[FMDatabase databaseWithPath:path];
     [_db open];
     
@@ -27,29 +27,31 @@ static FMDatabase *_db;
 
 #pragma mark - 增加、更新联系人信息
 +(void)updateContact:(YDContact *)contact{
-    NSString *sql0=[NSString stringWithFormat:@"select * from ydcontact WHERE roleID=%@" ,contact.roleID];//遍历语句
+    //查询语句 FMResultSet *rs = [_db executeQuery:@"select * from ydcontact where roleID = ?",contact.RoleId];
+    
+    NSString *sql0=[NSString stringWithFormat:@"SELECT * FROM ydcontact WHERE roleID=%@;" ,contact.RoleID];//遍历语句
     FMResultSet *rs = [_db executeQuery:sql0];
     if ([rs next]) {
         //更新联系人信息
 //      [_db executeUpdateWithFormat:@"UPDATE ydcontact SET name=%@ WHERE roleID=%@;",contact.name,contact.roleID];//修改昵称
-      [_db executeUpdateWithFormat:@"UPDATE ydcontact SET iconUrl=%@ WHERE roleID=%@;",contact.iconUrl,contact.roleID];//修改头像信息
+      [_db executeUpdateWithFormat:@"UPDATE ydcontact SET iconUrl=%@ WHERE roleID=%@;",contact.iconUrl,contact.RoleID];//修改头像信息
     }else{
         //增加联系人信息
-      [_db executeUpdate:@"insert into ydcontact (roleID,name,iconUrl) values (?, ?, ?);",contact.roleID,contact.name,contact.iconUrl];
+      [_db executeUpdate:@"insert into ydcontact (roleID,name,iconUrl) values (?,?,?);",contact.RoleID,contact.name,contact.iconUrl];
     }
 }
 
 #pragma mark - 根据roleID查询单个联系人
 +(YDContact *)getContactByRoleID:(NSString *)roleID{
     YDContact *contact = [[YDContact alloc]init];
-    NSString *sql0=[NSString stringWithFormat:@"select * from ydcontact WHERE roleID=%@" ,roleID];//遍历语句
+    NSString *sql0=[NSString stringWithFormat:@"select * from ydcontact WHERE roleID=%@;" ,roleID];//遍历语句
     FMResultSet *rs = [_db executeQuery:sql0];
     // 1.3.遍历
     while (rs.next) {
         NSString *roleID = [rs objectForColumnName:@"roleID"];
         NSString *name = [rs objectForColumnName:@"name"];
         NSString *iconUrl = [rs objectForColumnName:@"iconUrl"];
-        contact.roleID = roleID;
+        contact.RoleID = roleID;
         contact.name = name;
         contact.iconUrl = iconUrl;
     }
@@ -59,7 +61,7 @@ static FMDatabase *_db;
 #pragma mark - 返回所有联系人信息
 +(NSMutableArray *)contactArray{
     NSMutableArray *contacts=[NSMutableArray array];
-    FMResultSet *rs = [_db executeQuery:@"select * from ydcontact"];
+    FMResultSet *rs = [_db executeQuery:@"select * from ydcontact;"];
     // 1.3.遍历
     while (rs.next) {
         NSString *roleID = [rs objectForColumnName:@"roleID"];
